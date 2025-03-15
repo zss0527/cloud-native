@@ -22,5 +22,19 @@ services:
       - ORACLE_PWD=123456
     volumes:
       - oracle_data_learn:/opt/oracle/oradata
+  mysql8:
+    image: mysql:8.0
+    container_name: mysql8
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: security-demo
+      MYSQL_USER: larry
+      MYSQL_PASSWORD: 123456
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
 volumes:
   oracle_data_learn:
+  mysql_data:
