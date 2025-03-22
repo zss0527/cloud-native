@@ -119,11 +119,11 @@
 
 ### create redis cluster  
 
-1. add redis-cluster repo via `helm repo add bitnami https://charts.bitnami.com/bitnami
+1. add redis-cluster repo via `helm repo add bitnami https://charts.bitnami.com/bitnami;
 helm fetch bitnami/redis-cluster`.  
 2. `tar -xf redis-cluster-9.0.5.tgz; cd redis-cluster/`, update value.yaml.  
     - 修改密码
-    - 将service.type改为LoadBalencer
+    - 将service.type改为LoadBalancer
     - 将cluster.externalAccess.enabled改为true
 3. install redis-cluster: `helm install redis-cluster . -n redis`, 之后执行提示的命令去配置externalip.  
 4. 如果想卸载redis-cluster: 
@@ -181,3 +181,32 @@ helm fetch bitnami/redis-cluster`.
 
 ### create kafka cluster  
 
+1. add bitnami repo via `helm repo add bitnami  https://charts.bitnami.com/bitnami` and update repo `helm repo update bitnami`;  
+2. pull kafka `helm pull bitnami/kafka` and `tar -xf kafka-23.0.1.tgz`;
+3. cd kafak and update values.yaml file  
+   - update controller:automountServiceAccountToken: true
+   - update broker:automountServiceAccountToken: true and broker:replicaCount: 3
+   - update service:type: LoadBalancer
+   - update externalAccess:enabled: true and externalAccess:autoDiscovery:enabled: true
+   - update rbac:create: true
+4. create kafka namespace via `kubectl create ns kafka` and install kafka `helm install -n kafka kafka .`
+5. verify status `kubectl get po -n kafka`
+6. retrieve password `kubectl get secret kafka-user-passwords --namespace kafka -o jsonpath='{.data.client-passwords}' | base64 -d | cut -d , -f 1`,mXwFSO6biv
+7. connection config properties file content:
+    ```
+    security.protocol=SASL_PLAINTEXT
+    sasl.mechanism=SCRAM-SHA-256
+    sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required \
+    username="user1" \
+    password="mXwFSO6biv";
+    ```
+8. connection test
+   ```
+    producer:
+    kafka-console-producer --topic test-topic --bootstrap-server 192.168.1.112:9094 --producer.config client.properties
+    consumer:
+    kafka-console-consumer --topic test-topic --bootstrap-server 192.168.1.112:9094 --consumer.config client.properties --from-beginning
+   ```
+9. uninstall kafka
+    `helm delete kafka  -n kafka`  
+    `kubectl delete ns kafka`  
