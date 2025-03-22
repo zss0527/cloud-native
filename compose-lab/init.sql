@@ -1,0 +1,4 @@
+-- 创建 larry 用户并授予权限
+CREATE USER 'larry'@'%' IDENTIFIED BY '123456';
+GRANT ALL PRIVILEGES ON *.* TO 'larry'@'%';
+FLUSH PRIVILEGES;

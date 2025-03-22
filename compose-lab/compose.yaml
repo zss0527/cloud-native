@@ -27,13 +27,15 @@ services:
     container_name: mysql8
     environment:
       MYSQL_ROOT_PASSWORD: 123456
-      MYSQL_DATABASE: security-demo
+      MYSQL_DATABASE: mydatabase
       MYSQL_USER: larry
       MYSQL_PASSWORD: 123456
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: --bind-address=0.0.0.0
 
 volumes:
   oracle_data_learn:
