@@ -36,6 +36,18 @@ services:
       - mysql_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     command: --bind-address=0.0.0.0
+  kowl:
+    image: rsmnarts/kowl
+    container_name: kowl
+    ports:
+      - 8080:8080
+    environment:
+      - KAFKA_BROKERS= 192.168.1.110:9094,192.168.1.112:9094,192.168.1.113:9094
+      - KAFKA_SASL_ENABLED=true
+      - KAFKA_SASL_USERNAME=user1
+      - KAFKA_SASL_PASSWORD=mXwFSO6biv
+      - KAFKA_SASL_MECHANISM=SCRAM-SHA-256
+    restart: unless-stopped
 
 volumes:
   oracle_data_learn:
